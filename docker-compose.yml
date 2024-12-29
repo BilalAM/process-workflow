@@ -1,0 +1,26 @@
+version: '3'
+services:
+  postgres-container:
+    image: postgres:15
+    container_name: postgres-container
+    environment:
+      POSTGRES_DB: process-workflow
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: obviously123
+    volumes:
+      - ./postgres_orchestrator_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq-container
+    environment:
+      RABBITMQ_DEFAULT_USER: process-workflow-mq
+      RABBITMQ_DEFAULT_PASS: obviously345
+    volumes:
+      - ./rabbitmq_data:/var/lib/rabbitmq
+      - ./rabbitmq_logs:/var/log/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"

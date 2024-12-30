@@ -9,6 +9,9 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import jakarta.persistence.Version
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.UpdateTimestamp
 import java.time.OffsetDateTime
 
 
@@ -30,9 +33,15 @@ data class FileProcess(
     @Enumerated(EnumType.STRING)
     var status: FileStatus? = null,
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreationTimestamp
     var createdAt: OffsetDateTime? = null,
 
-    @Column(name = "updated_at", nullable = false)
-    var updatedAt: OffsetDateTime? = null
+    @Column(name = "updated_at", nullable = false, updatable = true)
+    @UpdateTimestamp
+    var updatedAt: OffsetDateTime? = null,
+
+    @Version
+    @Column(name = "version")
+    val version: Long = 0
 )

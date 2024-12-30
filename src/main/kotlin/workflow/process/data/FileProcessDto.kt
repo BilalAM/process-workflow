@@ -6,6 +6,6 @@ data class FileProcessDto(
     var fileName: String,
     var s3Url: String?,
     var status: FileStatus,
-    var createdAt: OffsetDateTime,
-    var updatedAt: OffsetDateTime
+    var createdAt: OffsetDateTime? = null,
+    var updatedAt: OffsetDateTime? = null
 )

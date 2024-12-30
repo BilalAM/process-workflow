@@ -19,25 +19,41 @@ class FileProcessService(
     fun upsertFileProcess(multipartFile: MultipartFile): FileProcessDto {
         val fileName = multipartFile.originalFilename ?: throw IllegalArgumentException("File name is required")
         checkFileNameNotInUse(fileName)
-        // upload file to s3 immediately
-        val fileProcess = createFileProcess(fileName, s3Url)
 
-        // upload file to s3 immediately
-        save(fileProcess.toEntity()) // first save the process in UPLOADED state
+        // Step1: Create initial entry in DB
+        val fileProcess = save(
+            createFileProcess(fileName, null, FileStatus.QUEUED).toEntity()
+        ).toDto()
 
-        enqueueEventInAmqp(fileName) // enqueue the event to be processed asynchronously
+        try {
 
-        fileProcess.status = FileStatus.QUEUED
-        save(fileProcess.toEntity()) // save the process as QUEUED
+            // Step2: Upload on s3
+            val s3Url = uploadToS3();
+            fileProcess.status = FileStatus.UPLOADED
+            fileProcess.s3Url = s3Url
 
+            // Step3: After s3 upload, we upsert the entry back with s3 url and UPLOADED status
+            save(fileProcess.toEntity())
+
+
+            // Step4: We enqueue event to amq. Status PROCESSING will be done by CONSUMER
+            enqueueEventInAmqp(fileProcess.fileName)
+
+        } catch (e: Exception) {
+            throw e;
+        }
         return fileProcess
     }
 
-    private fun createFileProcess(fileName: String, s3Url: String): FileProcessDto {
+    private fun uploadToS3(): String {
+        return "https://file_path.csv";
+    }
+
+    private fun createFileProcess(fileName: String, s3Url: String?, status: FileStatus): FileProcessDto {
         val fileProcess = FileProcessDto(
             fileName = fileName,
             s3Url = s3Url,
-            status = FileStatus.UPLOADED
+            status = status
         )
         return fileProcess
     }

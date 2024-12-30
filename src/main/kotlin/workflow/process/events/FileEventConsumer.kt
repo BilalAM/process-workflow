@@ -11,6 +11,7 @@ class FileEventConsumer(private val fileProcessService: FileProcessService) {
 
     @EventListener(FileProcessEvent::class)
     fun consumeFileEvent(fileProcessEvent: FileProcessEvent) {
+        println(fileProcessEvent.fileName)
         // get the file process by name
         // validate the file
         // 'process' the file

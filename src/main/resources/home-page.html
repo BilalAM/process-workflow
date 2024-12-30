@@ -89,6 +89,7 @@
             <th>File Name</th>
             <th>Status</th>
             <th>Actions</th>
+            <th>Uploaded At</th>
         </tr>
         </thead>
         <tbody id="fileList">
@@ -156,11 +157,10 @@
                 body: formData,
             });
 
-            const responseData = await response.json();
-
-            console.log(responseData);
             if (response.ok) {
-                newRow.children[1].innerHTML = '<span class="badge bg-primary"></span>';
+                const responseData = await response.json();
+                newRow.children[1].innerHTML = `<span class="badge bg-primary">${responseData.status}</span>`;
+                newRow.children[3].innerHTML = `<span class="badge bg-primary">${responseData.createdAt}</span>`;
             } else {
                 const errorMessage = await response.text();
                 newRow.children[1].innerHTML = '<span class="badge bg-danger">Failed</span>';

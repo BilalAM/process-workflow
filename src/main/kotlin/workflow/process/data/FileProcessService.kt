@@ -71,14 +71,19 @@ class FileProcessService(
 
     fun save(fileProcess: FileProcess): FileProcess {
         try {
+            val existingFileProcess = findByName(fileProcess.fileName!!)
+            if (existingFileProcess != null) {
+                fileProcess.id = existingFileProcess.id
+                return fileProcessRepository.save(fileProcess)
+            }
             return fileProcessRepository.save(fileProcess)
         } catch (e: OptimisticLockException) {
             throw RuntimeException("Error uploading file process.")
         }
     }
 
-    fun findByName(fileName: String): FileProcessDto? {
-        return fileProcessRepository.findByName(fileName)?.toDto()
+    fun findByName(fileName: String): FileProcess? {
+        return fileProcessRepository.findByFileName(fileName)
     }
 
     fun findById(id: Int): FileProcess {

@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 interface FileProcessRepository : CrudRepository<FileProcess, Int> {
-    fun findByName(fileName: String): FileProcess?
+    fun findByFileName(fileName: String): FileProcess?
 }

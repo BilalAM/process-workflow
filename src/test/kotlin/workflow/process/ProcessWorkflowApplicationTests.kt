@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class ProcessWorkflowApplicationTests {
 
     @Test
-    void contextLoads() {
+    fun contextLoads() {
     }
 
 }

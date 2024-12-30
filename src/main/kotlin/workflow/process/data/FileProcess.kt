@@ -1,22 +1,23 @@
 package workflow.process.data;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import org.hibernate.annotations.ColumnDefault;
-
-import java.time.OffsetDateTime;
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.Table
+import java.time.OffsetDateTime
 
 
 @Entity
-@Table(name = "file_process")
+@Table(name = "file_process", schema = "public")
 data class FileProcess(
 
     @Id
-    @ColumnDefault("nextval('file_process_id_seq')")
-    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
 
     @Column(name = "file_name", nullable = false, length = Int.MAX_VALUE)
@@ -26,7 +27,8 @@ data class FileProcess(
     var s3Url: String? = null,
 
     @Column(name = "status", nullable = false, length = Int.MAX_VALUE)
-    var status: String? = null,
+    @Enumerated(EnumType.STRING)
+    var status: FileStatus? = null,
 
     @Column(name = "created_at", nullable = false)
     var createdAt: OffsetDateTime? = null,

@@ -4,7 +4,6 @@ import workflow.process.data.FileProcess
 import workflow.process.data.FileProcessDto
 
 fun FileProcessDto.toEntity() = FileProcess(
-    id = id,
     fileName = fileName,
     s3Url = s3Url,
     status = status,
@@ -13,7 +12,6 @@ fun FileProcessDto.toEntity() = FileProcess(
 )
 
 fun FileProcess.toDto() = FileProcessDto(
-    id = id!!,
     fileName = fileName!!,
     s3Url = s3Url,
     status = status!!,

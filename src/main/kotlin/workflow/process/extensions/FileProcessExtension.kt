@@ -1,7 +1,7 @@
 package workflow.process.extensions
 
-import workflow.process.data.FileProcess
-import workflow.process.data.FileProcessDto
+import workflow.process.data.model.FileProcess
+import workflow.process.data.model.FileProcessDto
 
 fun FileProcessDto.toEntity() = FileProcess(
     fileName = fileName,

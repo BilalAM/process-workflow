@@ -1,5 +1,6 @@
-package workflow.process.data;
+package workflow.process.data.model
 
+import workflow.process.data.FileStatus
 import java.time.OffsetDateTime;
 
 data class FileProcessDto(

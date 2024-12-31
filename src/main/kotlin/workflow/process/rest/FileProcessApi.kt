@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
-import workflow.process.data.FileProcessDto
-import workflow.process.data.FileProcessService
+import workflow.process.data.model.FileProcessDto
 import workflow.process.extensions.toDto
+import workflow.process.services.FileProcessService
 
 
 @RestController

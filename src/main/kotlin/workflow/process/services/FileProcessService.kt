@@ -1,17 +1,20 @@
-package workflow.process.data;
+package workflow.process.services
 
 
 import jakarta.persistence.OptimisticLockException
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
+import workflow.process.data.FileStatus
+import workflow.process.data.model.FileProcess
+import workflow.process.data.model.FileProcessDto
 import workflow.process.events.FileEventProducer
 import workflow.process.extensions.toDto
 import workflow.process.extensions.toEntity
 
 @Service
 class FileProcessService(
-    private val fileProcessRepository: FileProcessRepository,
+    private val fileProcessRepository: workflow.process.data.FileProcessRepository,
     private val fileEventProducer: FileEventProducer
 ) {
 

@@ -1,4 +1,4 @@
-package workflow.process.data;
+package workflow.process.data.model
 
 
 import jakarta.persistence.Column
@@ -12,12 +12,13 @@ import jakarta.persistence.Table
 import jakarta.persistence.Version
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
+import workflow.process.data.FileStatus
 import java.time.OffsetDateTime
 
 
 @Entity
 @Table(name = "file_process", schema = "public")
-data class FileProcess(
+public data class FileProcess(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

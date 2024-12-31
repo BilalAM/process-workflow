@@ -1,6 +1,6 @@
 package workflow.process.events
 
-import org.springframework.context.event.EventListener
+import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.stereotype.Component
 import workflow.process.data.FileProcessService
 
@@ -9,7 +9,7 @@ import workflow.process.data.FileProcessService
 class FileEventConsumer(private val fileProcessService: FileProcessService) {
 
 
-    @EventListener(FileProcessEvent::class)
+    @RabbitListener(queues = ["file-events"])
     fun consumeFileEvent(fileProcessEvent: FileProcessEvent) {
         println(fileProcessEvent.fileName)
         // get the file process by name

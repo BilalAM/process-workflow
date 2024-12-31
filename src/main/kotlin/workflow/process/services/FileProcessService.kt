@@ -15,7 +15,8 @@ import workflow.process.extensions.toEntity
 @Service
 class FileProcessService(
     private val fileProcessRepository: workflow.process.data.FileProcessRepository,
-    private val fileEventProducer: FileEventProducer
+    private val fileEventProducer: FileEventProducer,
+    private val fileProcessStorageService: FileProcessStorageService
 ) {
 
     @Transactional(rollbackFor = [Exception::class])
@@ -31,7 +32,7 @@ class FileProcessService(
         try {
 
             // Step2: Upload on s3
-            val s3Url = uploadToS3();
+            val s3Url = fileProcessStorageService.pushToS3(multipartFile);
             fileProcess.status = FileStatus.UPLOADED
             fileProcess.s3Url = s3Url
 
@@ -48,9 +49,6 @@ class FileProcessService(
         return fileProcess
     }
 
-    private fun uploadToS3(): String {
-        return "https://file_path.csv";
-    }
 
     private fun createFileProcess(fileName: String, s3Url: String?, status: FileStatus): FileProcessDto {
         val fileProcess = FileProcessDto(

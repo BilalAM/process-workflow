@@ -1,14 +1,15 @@
-package workflow.process.events;
+package workflow.process.configuration
 
 
+import org.springframework.amqp.support.converter.SimpleMessageConverter
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 class EventsBrokerConfig {
     @Bean
-    fun converter(): org.springframework.amqp.support.converter.SimpleMessageConverter {
-        val simpleMessageConverter = org.springframework.amqp.support.converter.SimpleMessageConverter();
+    fun converter(): SimpleMessageConverter {
+        val simpleMessageConverter = SimpleMessageConverter();
         simpleMessageConverter.setAllowedListPatterns(listOf("workflow.process.events.*"));
         return simpleMessageConverter
     }

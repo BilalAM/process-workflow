@@ -2,6 +2,7 @@ package workflow.process.events
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.stereotype.Component
+import workflow.process.configuration.Loggable
 import workflow.process.data.FileStatus
 import workflow.process.services.FileProcessService
 import workflow.process.services.FileProcessStorageService
@@ -11,7 +12,7 @@ import workflow.process.services.FileProcessStorageService
 class FileEventConsumer(
     private val fileProcessService: FileProcessService,
     private val fileProcessStorageService: FileProcessStorageService
-) {
+) : Loggable() {
 
 
     @RabbitListener(queues = ["file-events"])
@@ -24,8 +25,12 @@ class FileEventConsumer(
         fileMetadata?.takeIf { it.s3Url != null && it.status == FileStatus.UPLOADED }?.let {
 
             // Step3: Fetch file from s3
-            val s3File = fileProcessStorageService.pullFromS3(it.s3Url!!)
-            println("File pulled from s3: ${s3File.absolutePath}")
+            val content = fileProcessStorageService.pullFromS3(it.s3Url!!)
+            if (content == null) {
+                fileMetadata.status = FileStatus.FAILED
+                fileProcessService.save(fileMetadata)
+                return
+            }
 
             // Step4: Mimik process of file
             Thread.sleep(2000)

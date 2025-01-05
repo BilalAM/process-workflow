@@ -159,7 +159,7 @@
 
             if (response.ok) {
                 const responseData = await response.json();
-                newRow.children[1].innerHTML = `<span class="badge bg-primary">${responseData.status}</span>`;
+                newRow.children[1].innerHTML = `<span class="badge bg-primary">${responseData.status === 'UPLOADED' ? 'PROCESSING <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>' : ''}</span>`;
                 // newRow.children[3].innerHTML = `<span class="badge bg-primary">${responseData.createdAt}</span>`;
             } else {
                 const errorMessage = await response.text();

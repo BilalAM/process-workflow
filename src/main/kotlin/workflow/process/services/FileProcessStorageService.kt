@@ -27,12 +27,13 @@ class FileProcessStorageService(private val s3Client: S3Client) : Loggable() {
     }
 
 
-    fun pullFromS3(url: String): String? {
+    fun pullFromS3(url: String): Unit? {
         try {
-            return s3Client.getObjectAsBytes(
+            s3Client.getObjectAsBytes(
                 GetObjectRequest.builder().key(url)
                     .bucket(BUCKET).build()
-            ).asUtf8String();
+            )
+            return Unit
         } catch (e: Exception) {
             logger.warn("Unable to pull $url from s3: ", e)
         }

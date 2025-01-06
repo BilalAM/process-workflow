@@ -27,7 +27,7 @@ class FileEventConsumer(
             // Step3: Fetch file from s3
             val content = fileProcessStorageService.pullFromS3(it.s3Url!!)
             if (content == null) {
-                logger.warn("Unable to push file to s3 :${fileProcessEvent.fileName}")
+                logger.warn("Unable to pull file from s3 :${fileProcessEvent.fileName}")
                 fileMetadata.status = FileStatus.FAILED
                 fileProcessService.save(fileMetadata)
                 return
@@ -45,7 +45,12 @@ class FileEventConsumer(
 
         } ?: run {
             logger.error("File meta not found or incorrect state: ${fileProcessEvent.fileName}")
-            println("File not found or not in correct state")
+            val fileMetadataa = fileProcessService.findByName(fileProcessEvent.fileName)
+            if (fileMetadataa != null) {
+                fileMetadataa.status = FileStatus.FAILED
+                fileProcessService.save(fileMetadataa)
+                return
+            }
         }
     }
 }

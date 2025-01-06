@@ -4,6 +4,8 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.stereotype.Component
 import workflow.process.configuration.Loggable
 import workflow.process.data.FileStatus
+import workflow.process.data.model.FileProcessDto
+import workflow.process.extensions.toEntity
 import workflow.process.services.FileProcessService
 import workflow.process.services.FileProcessStorageService
 
@@ -20,6 +22,19 @@ class FileEventConsumer(
         logger.info("Recieved event: ${fileProcessEvent.fileName}")
         // Step1 : Find the metadata in the DB
         val fileMetadata = fileProcessService.findByName(fileProcessEvent.fileName)
+        if (fileMetadata == null) {
+            // Technically this should not happen since the event is generated after
+            // the entry is persisted in the DB.
+            // But still there might be a race condition
+            // In that case, we create an entry with status FAILED.
+            fileProcessService.save(
+                FileProcessDto(
+                    fileName = fileProcessEvent.fileName,
+                    s3Url = null,
+                    status = FileStatus.FAILED
+                ).toEntity()
+            )
+        }
 
         // Step2: Only process if it has s3URL and the state is UPLOADED
         fileMetadata?.takeIf { it.s3Url != null && it.status == FileStatus.UPLOADED }?.let {

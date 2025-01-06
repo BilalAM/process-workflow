@@ -159,8 +159,7 @@
 
             if (response.ok) {
                 const responseData = await response.json();
-                newRow.children[1].innerHTML = `<span class="badge bg-primary">${responseData.status === 'UPLOADED' ? 'PROCESSING <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>' : ''}</span>`;
-                // newRow.children[3].innerHTML = `<span class="badge bg-primary">${responseData.createdAt}</span>`;
+                newRow.children[1].innerHTML = `<span class="badge bg-primary">${responseData.status === 'UPLOADED' ? 'PROCESSING <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>' : responseData.status === 'FAILED' ? 'FAILED' : ''}</span>`;                // newRow.children[3].innerHTML = `<span class="badge bg-primary">${responseData.createdAt}</span>`;
             } else {
                 const errorMessage = await response.text();
                 newRow.children[1].innerHTML = '<span class="badge bg-danger">Failed</span>';
@@ -176,8 +175,6 @@
         uploadButton.disabled = true;
         selectedFile = null;
     });
-
-
 
 
     // Function to fetch data from the endpoint
@@ -203,7 +200,7 @@
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${file.fileName}</td>
-                <td><span class="badge bg-primary">${file.status}</span></td>
+                <td><span class="badge ${file.status === 'PROCESSED' ? 'bg-success' : file.status === 'FAILED' ? 'bg-danger' : 'bg-primary'}">${file.status}</span></td>
                 <td><button class="btn btn-sm btn-secondary">View</button></td>
                 <td>${file.uploadedAt}</td>
             `;

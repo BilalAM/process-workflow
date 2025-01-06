@@ -17,7 +17,7 @@ class FileEventConsumer(
 
     @RabbitListener(queues = ["file-events"])
     fun consumeFileEvent(fileProcessEvent: FileProcessEvent) {
-        println("Event got for <--:::::-->  " + fileProcessEvent.fileName)
+        logger.info("Recieved event: ${fileProcessEvent.fileName}")
         // Step1 : Find the metadata in the DB
         val fileMetadata = fileProcessService.findByName(fileProcessEvent.fileName)
 
@@ -27,6 +27,7 @@ class FileEventConsumer(
             // Step3: Fetch file from s3
             val content = fileProcessStorageService.pullFromS3(it.s3Url!!)
             if (content == null) {
+                logger.warn("Unable to push file to s3 :${fileProcessEvent.fileName}")
                 fileMetadata.status = FileStatus.FAILED
                 fileProcessService.save(fileMetadata)
                 return
@@ -40,8 +41,10 @@ class FileEventConsumer(
             // Step5: Set the state to PROCESSED if all is good and persist it
             fileMetadata.status = FileStatus.PROCESSED;
             fileProcessService.save(fileMetadata)
+            logger.info("Processed file ${fileMetadata.fileName}")
 
         } ?: run {
+            logger.error("File meta not found or incorrect state: ${fileProcessEvent.fileName}")
             println("File not found or not in correct state")
         }
     }

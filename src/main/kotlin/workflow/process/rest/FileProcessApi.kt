@@ -18,7 +18,6 @@ class FileProcessApi(private val fileProcessService: FileProcessService) {
 
     @PostMapping("/upload")
     fun uploadFile(file: MultipartFile): ResponseEntity<FileProcessDto> {
-        println("File uploaded ${file.print()}")
         val uploaded = fileProcessService.upsertFileProcess(file)
         return ResponseEntity.ok(uploaded)
     }

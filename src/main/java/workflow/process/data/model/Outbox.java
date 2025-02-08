@@ -8,26 +8,20 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.OffsetDateTime;
 
-
-@Entity
 @Data
-@Table(name = "file_process", schema = "public")
-public class FileProcess {
-
+@Table(name = "outbox", schema = "public")
+@Entity
+public class Outbox {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @GeneratedValue
     private Long id;
 
-    @Column(name = "file_name")
-    private String fileName;
-
     @Column(name = "file-uuid")
-    private String uuid;
+    private String fileUUID;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private FileStatus status;
+    private OutboxStatus status;
 
     @Column(name = "created_at")
     @CreationTimestamp
@@ -36,8 +30,4 @@ public class FileProcess {
     @Column(name = "updated_at")
     @UpdateTimestamp
     private OffsetDateTime updatedAt;
-
-    @Version
-    @Column(name = "version")
-    private Long version;
 }

@@ -1,7 +1,6 @@
 package workflow.process.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -10,12 +9,12 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Service
+@Slf4j
 public class FileProcessStorageService {
 
     private static final String PROCESSED_FILES_PREFIX = "processed-files/";
     private static final String BUCKET = "workflow-process";
     private final S3Client s3Client;
-    private final Logger logger = LoggerFactory.getLogger(FileProcessStorageService.class);
 
     public FileProcessStorageService(S3Client s3Client) {
         this.s3Client = s3Client;
@@ -32,7 +31,7 @@ public class FileProcessStorageService {
             );
             return PROCESSED_FILES_PREFIX + fileToPush.getOriginalFilename();
         } catch (Exception e) {
-            logger.error("Failed to push file to S3: ", e);
+            log.error("Failed to push file to S3: ", e);
             throw new RuntimeException("Failed to push file to S3", e);
         }
     }
@@ -46,7 +45,7 @@ public class FileProcessStorageService {
                             .build()
             );
         } catch (Exception e) {
-            logger.warn("Unable to pull {} from S3: ", url, e);
+            log.warn("Unable to pull {} from S3: ", url, e);
         }
     }
 }

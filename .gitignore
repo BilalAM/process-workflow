@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+postgres_orchestrator_data/**
+rabbitmq_data/**
+rabbitmq_logs/**

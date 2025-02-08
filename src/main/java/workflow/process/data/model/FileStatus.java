@@ -1,6 +1,6 @@
-package workflow.process.data
+package workflow.process.data.model;
 
-enum class FileStatus {
+public enum FileStatus {
     UPLOADED,
     PROCESSING,
     PROCESSED,

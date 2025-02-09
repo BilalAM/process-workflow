@@ -25,7 +25,7 @@ public class FileProcess {
     @Column(name = "file_s3_path")
     private String fileS3Path;
 
-    @Column(name = "file-uuid")
+    @Column(name = "file_uuid")
     private String uuid;
 
     @Column(name = "status")

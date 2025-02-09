@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import workflow.process.data.model.FileProcess;
-import workflow.process.data.model.FileStatus;
-import workflow.process.data.model.Outbox;
-import workflow.process.data.model.OutboxStatus;
+import workflow.process.data.model.*;
 import workflow.process.exception.DataPersistenceException;
 
 import java.util.UUID;
@@ -21,7 +18,7 @@ public class FileProcessService {
     private final DataPersistenceService dataPersistenceService;
     private final FileProcessStorageService fileProcessStorageService;
 
-    public void processFile(MultipartFile fileToProcess) {
+    public FileProcessDto processFile(MultipartFile fileToProcess) {
         String s3Path = null;
         try {
             validateFile(fileToProcess);
@@ -32,6 +29,7 @@ public class FileProcessService {
             Outbox outbox = constructOutbox(fileProcess);
 
             dataPersistenceService.persistData(fileProcess, outbox);
+            return new FileProcessDto(fileProcess.getUuid(), fileProcess.getStatus().toString(), fileProcess.getUpdatedAt().toString());
         } catch (DataPersistenceException dataPersistenceException) {
             log.error("Failed to persist data: ", dataPersistenceException);
             cleanUpS3(s3Path);

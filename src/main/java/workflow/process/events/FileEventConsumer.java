@@ -14,16 +14,11 @@ import workflow.process.data.model.FileStatus;
 public class FileEventConsumer {
     private final FileProcessRepository fileProcessRepository;
 
-    @RabbitListener(queues = "file-process")
+    @RabbitListener(queues = "file-events")
     public void consumeFileEvent(FileProcessEvent event) {
         log.info("Recieved event:", event.fileUUID);
         fileProcessRepository.findByUuid(event.fileUUID)
                 .ifPresent(fileProcess -> {
-                    // business logic here
-                    // here as well ...
-                    //....
-
-
                     // then finally update the status
                     fileProcess.setStatus(FileStatus.PROCESSED);
                     fileProcessRepository.save(fileProcess);

@@ -14,8 +14,10 @@ public class WebConfiguration {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(org.springframework.web.servlet.config.annotation.@NotNull CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("http://localhost.*")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
+                registry.addMapping("/**")
+                        .allowedOriginPatterns("http://127.0.0.1.*", "http://localhost:63342")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowCredentials(true);
             }
         };
     }

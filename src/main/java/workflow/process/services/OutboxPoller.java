@@ -19,7 +19,7 @@ public class OutboxPoller {
     private final OutboxRepository outboxRepository;
     private final FileEventProducer fileEventProducer;
 
-    @Scheduled(fixedRate = 5, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(fixedRate = 30, timeUnit = TimeUnit.SECONDS)
     public void pollOutbox() {
         outboxRepository.findTop100ByStatusOrderByCreatedAtAsc(OutboxStatus.PENDING)
                 .forEach(outboxMessage -> {

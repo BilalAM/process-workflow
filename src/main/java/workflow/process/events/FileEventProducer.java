@@ -7,13 +7,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-class FileEventProducer {
+public class FileEventProducer {
 
     private final RabbitTemplate rabbitTemplate;
 
-    public void produceFileEvent(String fileName) {
+    public void produceFileEvent(String fileUUID) {
         FileProcessEvent event = new FileProcessEvent();
-        event.setFileName(fileName);
+        event.setFileUUID(fileUUID);
         rabbitTemplate.convertAndSend("file-events", event);
     }
 }

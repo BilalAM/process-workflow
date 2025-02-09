@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface FileProcessRepository extends CrudRepository<FileProcess, Integer> {
     Optional<FileProcess> findByFileName(String fileName);
+
+    Optional<FileProcess> findByUuid(String uuid);
 }

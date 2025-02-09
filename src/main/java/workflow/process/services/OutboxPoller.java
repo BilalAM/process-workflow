@@ -10,6 +10,7 @@ import workflow.process.data.model.Outbox;
 import workflow.process.data.model.OutboxStatus;
 import workflow.process.events.FileEventProducer;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -19,21 +20,25 @@ public class OutboxPoller {
     private final OutboxRepository outboxRepository;
     private final FileEventProducer fileEventProducer;
 
-    @Scheduled(fixedRate = 30, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(fixedRate = 4, timeUnit = TimeUnit.SECONDS)
     public void pollOutbox() {
-        outboxRepository.findTop100ByStatusOrderByCreatedAtAsc(OutboxStatus.PENDING)
-                .forEach(outboxMessage -> {
-                    try {
-                        fileEventProducer.produceFileEvent(outboxMessage.getFileUUID());
-                        updateOutboxStatusToSent(outboxMessage);
-                    } catch (Exception e) {
-                        log.warn("Unable to send outbox message {}, will be sent in next poller!", outboxMessage.getFileUUID(), e);
-                    }
-                });
+        List<Outbox> eligibleMessages = outboxRepository.findAndLockOutboxMessages(OutboxStatus.PENDING.name());
+        if (!eligibleMessages.isEmpty()) {
+            log.info("Initial ID {} , Last ID {}", eligibleMessages.getFirst().getId(), eligibleMessages.getLast().getId());
+        }
+        eligibleMessages.forEach(outboxMessage -> {
+            try {
+                updateOutboxStatus(outboxMessage, OutboxStatus.IN_PROGRESS);
+                fileEventProducer.produceFileEvent(outboxMessage.getFileUUID());
+                updateOutboxStatus(outboxMessage, OutboxStatus.SENT);
+            } catch (Exception e) {
+                log.warn("Unable to send outbox message {}, will be sent in next poller!", outboxMessage.getFileUUID(), e);
+            }
+        });
     }
 
-    private void updateOutboxStatusToSent(Outbox outboxMessage) {
-        outboxMessage.setStatus(OutboxStatus.SENT);
+    private void updateOutboxStatus(Outbox outboxMessage, OutboxStatus status) {
+        outboxMessage.setStatus(status);
         outboxRepository.save(outboxMessage);
     }
 }

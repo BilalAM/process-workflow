@@ -18,15 +18,15 @@ public class FileProcessApi {
 
     private final FileProcessService fileProcessService;
 
-    @PostMapping("/upload")
-    public ResponseEntity<FileProcessDto> uploadFile(@RequestParam("file") MultipartFile file) {
+    @PostMapping(path = "/upload", consumes = "multipart/form-data")
+    public ResponseEntity<FileProcessDto> uploadFile(@RequestBody MultipartFile file) {
         return ResponseEntity.ok(fileProcessService.processFile(file));
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<FileProcess>> listJobs() {
+    public ResponseEntity<List<FileProcessDto>> listJobs() {
 
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(fileProcessService.fetchAllFileProcesses());
     }
 
     @GetMapping("/job/{id}")

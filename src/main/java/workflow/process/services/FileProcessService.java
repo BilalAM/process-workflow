@@ -3,11 +3,14 @@ package workflow.process.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import workflow.process.data.model.*;
 import workflow.process.exception.DataPersistenceException;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -18,18 +21,19 @@ public class FileProcessService {
     private final DataPersistenceService dataPersistenceService;
     private final FileProcessStorageService fileProcessStorageService;
 
-    public FileProcessDto processFile(MultipartFile fileToProcess) {
+    @NotNull
+    public FileProcessDto processFile(@NotNull final MultipartFile fileToProcess) {
         String s3Path = null;
         try {
             validateFile(fileToProcess);
 
             s3Path = fileProcessStorageService.pushToS3(fileToProcess);
 
-            FileProcess fileProcess = constructFileProcess(s3Path, fileToProcess);
-            Outbox outbox = constructOutbox(fileProcess);
+            final FileProcess newFileProcess = constructFileProcess(s3Path, fileToProcess);
+            final Outbox outbox = constructOutbox(newFileProcess);
 
-            dataPersistenceService.persistData(fileProcess, outbox);
-            return new FileProcessDto(fileProcess.getUuid(), fileProcess.getStatus().toString(), fileProcess.getUpdatedAt().toString());
+            final FileProcess upsertedFileProcess = dataPersistenceService.persistData(newFileProcess, outbox);
+            return new FileProcessDto(upsertedFileProcess.getUuid(), upsertedFileProcess.getStatus().toString(), upsertedFileProcess.getUpdatedAt().toString());
         } catch (DataPersistenceException dataPersistenceException) {
             log.error("Failed to persist data: ", dataPersistenceException);
             cleanUpS3(s3Path);
@@ -39,21 +43,27 @@ public class FileProcessService {
         }
     }
 
-    private void cleanUpS3(String s3Path) {
+    @NotNull
+    public List<FileProcessDto> fetchAllFileProcesses() {
+        return dataPersistenceService.fetchAllFileProcesses();
+    }
+
+    private void cleanUpS3(@Nullable final String s3Path) {
         if (s3Path != null) {
             fileProcessStorageService.deleteFromS3(s3Path);
         }
     }
 
-    private Outbox constructOutbox(FileProcess fileProcess) {
-        Outbox outbox = new Outbox();
+    private Outbox constructOutbox(@NotNull final FileProcess fileProcess) {
+        final Outbox outbox = new Outbox();
         outbox.setFileUUID(fileProcess.getUuid());
         outbox.setStatus(OutboxStatus.PENDING);
         return outbox;
     }
 
-    private FileProcess constructFileProcess(String s3Path, MultipartFile fileToProcess) {
-        FileProcess fileProcess = new FileProcess();
+    private FileProcess constructFileProcess(@NotNull final String s3Path,
+                                             @NotNull final MultipartFile fileToProcess) {
+        final FileProcess fileProcess = new FileProcess();
         fileProcess.setFileName(fileToProcess.getOriginalFilename());
         fileProcess.setUuid(UUID.randomUUID().toString());
         fileProcess.setStatus(FileStatus.PROCESSING);

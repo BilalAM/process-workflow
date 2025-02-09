@@ -40,7 +40,4 @@ public class FileProcess {
     @UpdateTimestamp
     private OffsetDateTime updatedAt;
 
-    @Version
-    @Column(name = "version")
-    private Long version;
 }

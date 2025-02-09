@@ -1,26 +1,24 @@
 package workflow.process.services;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class FileProcessStorageService {
 
     private static final String PROCESSED_FILES_PREFIX = "processed-files/";
     private static final String BUCKET = "workflow-process";
     private final S3Client s3Client;
 
-    public FileProcessStorageService(S3Client s3Client) {
-        this.s3Client = s3Client;
-    }
-
-    public String pushToS3(MultipartFile fileToPush) {
+    public String pushToS3(@NotNull final MultipartFile fileToPush) {
         try {
 //            s3Client.putObject(
 //                    PutObjectRequest.builder()
@@ -36,7 +34,7 @@ public class FileProcessStorageService {
         }
     }
 
-    public void pullFromS3(String url) {
+    public void pullFromS3(@NotNull final String url) {
         try {
             s3Client.getObjectAsBytes(
                     GetObjectRequest.builder()
@@ -49,9 +47,9 @@ public class FileProcessStorageService {
         }
     }
 
-    public void deleteFromS3(String url) {
+    public void deleteFromS3(@NotNull final String url) {
         try {
-             s3Client.deleteObject(
+            s3Client.deleteObject(
                     DeleteObjectRequest.builder()
                             .bucket(BUCKET)
                             .key(url)
